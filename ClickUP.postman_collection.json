@@ -1,0 +1,606 @@
+{
+	"info": {
+		"_postman_id": "6b44d0e1-75ac-465d-9332-c316b028d697",
+		"name": "ClickUP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "27408364",
+		"_collection_link": "https://my-team-0221.postman.co/workspace/My-Team-Workspace~3567de77-a466-4d01-8105-fc695b9b976b/collection/27408364-6b44d0e1-75ac-465d-9332-c316b028d697?action=share&source=collection_link&creator=27408364"
+	},
+	"item": [
+		{
+			"name": "Goals - Integration flow",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A Goal id is returned\", () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.have.property('goal');\r",
+									"    pm.expect(responseData.goal).to.have.property('id').that.is.a('string');\r",
+									"\r",
+									"    // Set the collection-scope \"id\" variable to the id received from the API\r",
+									"    // This lets us use it in other requests\r",
+									"    pm.collectionVariables.set('id', responseData.goal.id);\r",
+									"        console.log(\"Goal id:\", responseData.goal.id);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Goal Name is ceated and contains: Learn API\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.goal.name).to.be.a('string').and.to.have.contains(\"Learn API\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\": \"Learn API {{$randomInt}}\",\r\n\"due_date\": 1568036964079,\r\n\"description\": \"Goal Description\",\r\n\"multiple_owners\": false,\r\n\"owners\": [\r\n{{owner_id}}\r\n],\r\n\"color\": \"#32a852\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Goal Name is ceated and contains: Learn API\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.goal.name).to.be.a('string').and.to.have.contains(\"Learn API\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/v2/goal/{{id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Goals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the response schema\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.goals).to.exist;",
+									"   ",
+									"});",
+									"",
+									"",
+									"pm.test(\"All Goals Name contain Lear API and Creator ID match the owner ID\", function () {",
+									"    const responseData = pm.response.json();",
+									"    responseData.goals.forEach(goal => {",
+									"    const ownerId = Number(pm.variables.get(\"owner_id\")); // Fetch the variable value and convert to number not a string",
+									"pm.expect(goal.creator).to.eql(ownerId, \"Creator ID should match the owner ID\");        ",
+									"pm.expect(goal.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Goal ID should not be empty\").and.to.contains(\"Learn API\")",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v2/team/9015698020/goal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"team",
+								"9015698020",
+								"goal"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"New Goal Name contains: Updated Goal Name\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData.goal.name).to.be.a('string').and.to.have.contains(\"Updated Goal Name\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\": \"Updated Goal Name {{$randomInt}}\",\r\n\"due_date\": 1568036964079,\r\n\"description\": \"Updated Goal Description\",\r\n\"rem_owners\": [\r\n{{owner_id}}\r\n],\r\n\"add_owners\": [\r\n{{owner_id}}\r\n],\r\n\"color\": \"#32a852\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/goal/{{id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains only {}\", function () {\r",
+									"    pm.expect(pm.response.json()).to.eql({});\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/v2/goal/{{id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal (Copy)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A Goal id is returned\", () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.have.property('goal');\r",
+									"    pm.expect(responseData.goal).to.have.property('id').that.is.a('string');\r",
+									"\r",
+									"    // Set the collection-scope \"id\" variable to the id received from the API\r",
+									"    // This lets us use it in other requests\r",
+									"    pm.collectionVariables.set('id', responseData.goal.id);\r",
+									"        console.log(\"Goal id:\", responseData.goal.id);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Goal Name is ceated and contains: Learn API\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.goal.name).to.be.a('string').and.to.have.contains(\"Learn API\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\": \"Learn API {{$randomInt}}\",\r\n\"due_date\": 1568036964079,\r\n\"description\": \"Goal Description\",\r\n\"multiple_owners\": false,\r\n\"owners\": [\r\n{{owner_id}}\r\n],\r\n\"color\": \"#32a852\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Target to a Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Target Goal Name contains: New Key Result Name\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.key_result.name).to.be.a('string').and.to.have.contains(\"New Key Result Name\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Target Goal Type is number\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.key_result.type).to.be.contain('number');\r",
+									"    });\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"    pm.test(\"A Target key id is returned\", () => {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.have.property('key_result'),\r",
+									"    pm.expect(responseData.key_result).to.have.property('id').that.is.a('string');\r",
+									"    pm.collectionVariables.set('key_result.id', responseData.key_result.id);\r",
+									"        console.log(\"Key_result id:\", responseData.key_result.id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\": \"New Key Result Name {{$randomInt}}\",\r\n\"owners\": [\r\n{{owner_id}}\r\n],\r\n\"type\": \"number\",\r\n\"steps_start\": 0,\r\n\"steps_end\": 10,\r\n\"unit\": \"km\",\r\n\"task_ids\": [ ],\r\n\"list_ids\": [ ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/goal/{{id}}/key_result"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Target for a Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Target Goal Name contains: New Key Result Name\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.key_result.name).to.be.a('string').and.to.have.contains(\"New Key Result Name\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Target Goal Type is number\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.key_result.type).to.be.contain('number');\r",
+									"    });\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"steps_current\": 5,\r\n\"note\": \"Target achieved\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/key_result/{{key_result.id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Target",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains only {}\", function () {\r",
+									"    pm.expect(pm.response.json()).to.eql({});\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "pk_74467004_0X42VN9VLE6WY3YLG0AYALOOX8D84K1Z",
+								"key": "Authorization",
+								"in": "header"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"steps_current\": 5,\r\n\"note\": \"Target achieved\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/v2/key_result/{{key_result.id}}"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.clickup.com/api",
+			"type": "string"
+		},
+		{
+			"key": "team_id",
+			"value": "9015698020",
+			"type": "string"
+		},
+		{
+			"key": "owner_id",
+			"value": "74467004",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": ""
+		},
+		{
+			"key": "key_result.id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
